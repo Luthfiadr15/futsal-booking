@@ -1,144 +1,155 @@
 <template>
-  <section class="jadwal">
-    <h2>Jadwal Reservasi Lapangan</h2>
+  <div class="min-h-screen flex items-center justify-center bg-gray-100 py-10 px-4">
+    <div class="box-jadwal w-full max-w-6xl">
+      <h2 class="judul">Jadwal Reservasi Lapangan</h2>
 
-    <!-- Tombol Navigasi ke Halaman Reservasi -->
-    <div class="btn-reservasi-wrapper">
-      <button class="btn-reservasi" @click="goToReservasi">Reservasi Sekarang</button>
+      <div class="text-right mb-4">
+        <button class="btn" @click="goToReservasi">+ Reservasi Baru</button>
+      </div>
+
+      <table class="tabel w-full">
+        <thead>
+          <tr>
+            <th>Tanggal</th>
+            <th>Jam</th>
+            <th>Nama</th>
+            <th>Lapangan</th>
+            <th>Status</th>
+            <th>Jumlah Bayar</th>
+            <th>Metode</th>
+            <th>Pembayaran</th>
+            <th>Aksi</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="item in jadwal" :key="item.id">
+            <td>{{ item.tanggal }}</td>
+            <td>{{ item.jam }}</td>
+            <td>{{ item.nama }}</td>
+            <td>{{ item.lapangan }}</td>
+            <td :class="item.status === 'Tersedia' ? 'text-green-600' : 'text-red-600'">
+              {{ item.status }}
+            </td>
+            <td>
+              <span v-if="item.jumlah">Rp {{ item.jumlah.toLocaleString() }}</span>
+              <span v-else class="text-gray-400">-</span>
+            </td>
+            <td>
+              <span v-if="item.metode">{{ item.metode }}</span>
+              <span v-else class="text-gray-400">-</span>
+            </td>
+            <td>
+              <span
+                v-if="item.status === 'Lunas' || item.status === 'Sudah Dibayar'"
+                class="text-green-600 font-semibold"
+              >Lunas</span>
+              <span
+                v-else
+                class="text-yellow-500 font-semibold"
+              >Belum</span>
+            </td>
+            <td>
+              <button class="text-red-600 underline" @click="hapusJadwal(item.id)">Hapus</button>
+            </td>
+          </tr>
+          <tr v-if="jadwal.length === 0">
+            <td colspan="9" class="text-center text-gray-400 py-4">Belum ada data jadwal.</td>
+          </tr>
+        </tbody>
+      </table>
     </div>
-
-    <table>
-      <thead>
-        <tr>
-          <th>Tanggal</th>
-          <th>Jam</th>
-          <th>Nama Pemesan</th>
-          <th>Lapangan</th>
-          <th>Aksi</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="(item, index) in jadwal" :key="index">
-          <td>{{ item.tanggal }}</td>
-          <td>{{ item.jam }}</td>
-          <td>{{ item.nama }}</td>
-          <td>{{ item.lapangan }}</td>
-          <td><button @click="hapusJadwal(index)">Hapus</button></td>
-        </tr>
-        <tr v-if="jadwal.length === 0">
-          <td colspan="5">Belum ada jadwal reservasi.</td>
-        </tr>
-      </tbody>
-    </table>
-  </section>
+  </div>
 </template>
 
 <script>
+import axios from 'axios'
+
 export default {
   name: "Jadwal",
   data() {
     return {
-      jadwal: JSON.parse(localStorage.getItem('jadwal')) || []
+      jadwal: [],
     }
   },
   methods: {
-    hapusJadwal(index) {
-      this.jadwal.splice(index, 1)
-      localStorage.setItem('jadwal', JSON.stringify(this.jadwal))
+    async getJadwal() {
+      try {
+        const res = await axios.get('http://localhost:3001/jadwal')
+        this.jadwal = res.data
+      } catch (err) {
+        console.error('❌ Gagal mengambil data jadwal:', err)
+        alert('❌ Gagal mengambil data.')
+      }
+    },
+    async hapusJadwal(id) {
+      if (!confirm('Yakin ingin menghapus jadwal ini?')) return
+      try {
+        await axios.delete(`http://localhost:3001/jadwal/${id}`)
+        this.getJadwal()
+        alert('✅ Jadwal berhasil dihapus!')
+      } catch (err) {
+        console.error('❌ Gagal menghapus jadwal:', err)
+        alert('❌ Gagal menghapus jadwal.')
+      }
     },
     goToReservasi() {
       this.$router.push('/reservasi')
     }
   },
   mounted() {
-    const today = new Date()
-    this.jadwal = this.jadwal.filter(item => {
-      const tanggalJadwal = new Date(item.tanggal + ' ' + item.jam)
-      return tanggalJadwal >= today
-    })
-    localStorage.setItem('jadwal', JSON.stringify(this.jadwal))
+    this.getJadwal()
   }
 }
 </script>
 
 <style scoped>
-.jadwal {
-  max-width: 900px;
-  margin: 40px auto;
-  background: linear-gradient(135deg, #2563eb, #1e40af);
-  padding: 25px 30px;
+.box-jadwal {
+  background: linear-gradient(135deg, #6366f1, #4338ca);
+  padding: 30px;
   border-radius: 20px;
-  color: #dbeafe;
-  box-shadow: 0 12px 30px rgba(59, 130, 246, 0.6);
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #e0e7ff;
+  box-shadow: 0 12px 30px rgba(99, 102, 241, 0.7);
 }
 
-.jadwal h2 {
-  font-size: 2.5rem;
-  margin-bottom: 20px;
+.judul {
   text-align: center;
-  font-weight: 700;
-  text-shadow: 0 0 15px #93c5fd;
-}
-
-.btn-reservasi-wrapper {
-  text-align: center;
+  font-size: 2rem;
+  font-weight: bold;
   margin-bottom: 25px;
 }
 
-.btn-reservasi {
-  background-color: #10b981;
-  color: white;
-  font-weight: bold;
-  font-size: 1rem;
-  padding: 10px 20px;
-  border-radius: 15px;
-  border: none;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-.btn-reservasi:hover {
-  background-color: #059669;
-}
-
-table {
+.tabel {
   width: 100%;
   border-collapse: collapse;
-  background: rgba(255 255 255 / 0.1);
-  border-radius: 15px;
+  background-color: white;
+  border-radius: 12px;
   overflow: hidden;
+  color: #1e293b;
 }
 
-thead tr {
-  background: #3b82f6;
-  color: white;
-  font-weight: 700;
-  font-size: 1.1rem;
+.tabel th,
+.tabel td {
+  padding: 12px 15px;
+  border-bottom: 1px solid #e2e8f0;
   text-align: left;
 }
 
-th, td {
-  padding: 14px 18px;
-  border-bottom: 1px solid rgba(255 255 255 / 0.2);
+.tabel th {
+  background-color: #e0e7ff;
+  font-weight: bold;
+  color: #4f46e5;
 }
 
-tbody tr:hover {
-  background: rgba(255 255 255 / 0.15);
+.btn {
+  background-color: #facc15;
+  color: #1f2937;
+  padding: 10px 20px;
+  font-weight: 600;
+  border-radius: 8px;
+  transition: all 0.2s ease-in-out;
 }
 
-button {
-  background-color: #ef4444;
-  border: none;
-  padding: 8px 14px;
-  border-radius: 12px;
-  color: white;
-  font-weight: 700;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-button:hover {
-  background-color: #b91c1c;
+.btn:hover {
+  background-color: #eab308;
 }
 </style>

@@ -1,11 +1,15 @@
 <template>
-  <section class="prestasi">
-    <h2>Prestasi team Kami</h2>
-    <p>Berikut beberapa prestasi yang telah kami raih dalam berbagai kompetisi.</p>
-    <div class="gallery">
-      <img v-for="(foto, idx) in fotoPrestasi" :key="idx" :src="foto" alt="Prestasi Futsal" />
+  <div class="min-h-screen flex items-center justify-center bg-gray-100 py-10 px-4">
+    <div class="box-prestasi w-full max-w-6xl">
+      <h2 class="judul">Prestasi Tim Kami</h2>
+      <p class="deskripsi">
+        Berikut beberapa prestasi yang telah kami raih dalam berbagai kompetisi futsal tingkat lokal maupun nasional.
+      </p>
+      <div class="gallery">
+        <img v-for="(foto, idx) in fotoPrestasi" :key="idx" :src="foto" alt="Prestasi Futsal" />
+      </div>
     </div>
-  </section>
+  </div>
 </template>
 
 <script>
@@ -24,49 +28,50 @@ export default {
 </script>
 
 <style scoped>
-.prestasi {
-  max-width: 900px;
-  margin: 40px auto;
-  background: linear-gradient(135deg, #d97706, #b45309);
-  padding: 30px 30px;
-  border-radius: 25px;
-  color: #fff7ed;
+.box-prestasi {
+  background: linear-gradient(135deg, #6366f1, #4338ca); /* Sama seperti Jadwal */
+  padding: 40px;
+  border-radius: 24px;
+  color: #e0e7ff;
+  box-shadow: 0 12px 30px rgba(99, 102, 241, 0.7);
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  box-shadow: 0 12px 30px rgba(180, 83, 9, 0.7);
+}
+
+.judul {
   text-align: center;
+  font-size: 2.5rem;
+  font-weight: bold;
+  margin-bottom: 18px;
+  text-shadow: 0 0 15px #8b5cf6;
 }
 
-.prestasi h2 {
-  font-size: 2.8rem;
-  margin-bottom: 15px;
-  font-weight: 700;
-  text-shadow: 0 0 15px #fcd34d;
-}
-
-.prestasi p {
+.deskripsi {
+  text-align: center;
   font-size: 1.2rem;
-  margin-bottom: 30px;
-  font-weight: 600;
-  text-shadow: 0 0 10px #fbbf24;
+  font-weight: 500;
+  margin-bottom: 32px;
+  text-shadow: 0 0 8px rgba(255, 255, 255, 0.2);
 }
 
 .gallery {
   display: flex;
   justify-content: center;
-  gap: 20px;
+  gap: 24px;
   flex-wrap: wrap;
 }
 
 .gallery img {
-  width: 280px;
-  border-radius: 20px;
-  box-shadow: 0 8px 20px rgba(255 255 255 / 0.25);
-  transition: transform 0.3s ease;
+  width: 260px;
+  height: 180px;
+  object-fit: cover;
+  border-radius: 18px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
   cursor: pointer;
 }
 
 .gallery img:hover {
-  transform: scale(1.07);
-  box-shadow: 0 12px 30px rgba(255 255 255 / 0.45);
+  transform: scale(1.06);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
 }
 </style>

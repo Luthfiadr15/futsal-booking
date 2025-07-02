@@ -30,16 +30,16 @@
     </div>
 
     <div class="stats">
-      <div>
+      <div class="stat-box">
         <h2>500+</h2>
         <p>Reservasi Sukses</p>
       </div>
-      <div>
+      <div class="stat-box">
         <h2>100%</h2>
         <p>Pelanggan Puas</p>
       </div>
-      <div>
-        <h2>10+</h2>
+      <div class="stat-box">
+        <h2>3+</h2>
         <p>Lapangan Tersedia</p>
       </div>
     </div>
@@ -129,12 +129,20 @@ export default {
 }
 
 .feature {
-  background: rgba(255, 255, 255, 0.05);
+  background: linear-gradient(to bottom right, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
   padding: 20px;
   border-radius: 20px;
   width: 250px;
   margin: 15px;
-  box-shadow: 0 0 12px rgba(255, 255, 255, 0.1);
+  box-shadow: 0 0 16px rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(4px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.feature:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 24px rgba(255, 255, 255, 0.3);
 }
 
 .feature img {
@@ -155,13 +163,21 @@ export default {
   margin-top: 30px;
 }
 
-.stats div {
-  background: rgba(255, 255, 255, 0.07);
+.stat-box {
+  background: linear-gradient(to bottom right, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.06));
   padding: 25px 30px;
   border-radius: 15px;
   text-align: center;
   min-width: 180px;
-  box-shadow: 0 0 8px rgba(255, 255, 255, 0.1);
+  box-shadow: 0 0 16px rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(4px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.stat-box:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 0 24px rgba(255, 255, 255, 0.3);
 }
 
 .stats h2 {

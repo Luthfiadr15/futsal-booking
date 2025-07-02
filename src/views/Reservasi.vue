@@ -1,126 +1,175 @@
 <template>
-  <section class="reservasi">
-    <h2>Reservasi Lapangan</h2>
-    <form @submit.prevent="submitReservasi" class="form-reservasi">
-      <label>
-        Nama:
-        <input type="text" v-model="nama" required placeholder="Masukkan nama lengkap" />
-      </label>
-      <label>
-        Tanggal:
-        <input type="date" v-model="tanggal" required />
-      </label>
-      <label>
-        Jam:
-        <input type="time" v-model="jam" required />
-      </label>
-      <label>
-        Lapangan:
-        <select v-model="lapangan" required>
-          <option disabled value="">Pilih lapangan</option>
-          <option>Lapangan 1</option>
-          <option>Lapangan 2</option>
-          <option>Lapangan 3</option>
-        </select>
-      </label>
-      <button type="submit">Pesan Sekarang</button>
-    </form>
-  </section>
+  <div class="min-h-screen flex items-center justify-center bg-gray-100">
+    <div class="form-wrapper">
+      <h2 class="form-title">Formulir Reservasi & Pembayaran</h2>
+
+      <form @submit.prevent="kirimReservasi" class="form-box">
+        <div class="form-group">
+          <label>Nama Pemesan</label>
+          <input v-model="form.nama" type="text" required placeholder="Masukkan nama" />
+        </div>
+
+        <div class="form-group">
+          <label>Tanggal</label>
+          <input v-model="form.tanggal" type="date" required />
+        </div>
+
+        <div class="form-group">
+          <label>Jam</label>
+          <input v-model="form.jam" type="time" required />
+        </div>
+
+        <div class="form-group">
+          <label>Lapangan</label>
+          <select v-model="form.lapangan" required>
+            <option disabled value="">Pilih Lapangan</option>
+            <option>Lapangan 1</option>
+            <option>Lapangan 2</option>
+            <option>Lapangan 3</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Metode Pembayaran</label>
+          <select v-model="form.metode" required>
+            <option disabled value="">Pilih Metode</option>
+            <option>QRIS</option>
+            <option>Transfer BCA</option>
+            <option>Transfer BNI</option>
+            <option>Tunai</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Jumlah Bayar (Rp)</label>
+          <input v-model.number="form.jumlah" type="number" required placeholder="Contoh: 150000" />
+        </div>
+
+        <button type="submit" class="submit-button">Simpan Reservasi</button>
+      </form>
+    </div>
+  </div>
 </template>
 
 <script>
+import axios from 'axios'
+
 export default {
-  name: "Reservasi",
+  name: 'Reservasi',
   data() {
     return {
-      nama: '',
-      tanggal: '',
-      jam: '',
-      lapangan: ''
+      form: {
+        nama: '',
+        tanggal: '',
+        jam: '',
+        lapangan: '',
+        status: 'Lunas', // default langsung dianggap sudah bayar
+        metode: '',
+        jumlah: null
+      }
     }
   },
   methods: {
-    submitReservasi() {
-      if (!this.nama || !this.tanggal || !this.jam || !this.lapangan) {
-        alert("Semua field harus diisi dengan benar!")
-        return
-      }
+    async kirimReservasi() {
+      try {
+        const { nama, tanggal, jam, lapangan, status, metode, jumlah } = this.form
 
-      let jadwal = JSON.parse(localStorage.getItem('jadwal')) || []
-      jadwal.push({
-        nama: this.nama,
-        tanggal: this.tanggal,
-        jam: this.jam,
-        lapangan: this.lapangan
-      })
-      localStorage.setItem('jadwal', JSON.stringify(jadwal))
-      alert("Reservasi berhasil ditambahkan!")
-      this.nama = ''
-      this.tanggal = ''
-      this.jam = ''
-      this.lapangan = ''
+        const res = await axios.get(`http://localhost:3001/jadwal?tanggal=${tanggal}&jam=${jam}`)
+
+        const data = {
+          nama, tanggal, jam, lapangan, status, metode, jumlah
+        }
+
+        if (res.data.length > 0) {
+          const existing = res.data[0]
+          await axios.patch(`http://localhost:3001/jadwal/${existing.id}`, {
+            ...existing,
+            ...data
+          })
+        } else {
+          await axios.post('http://localhost:3001/jadwal', data)
+        }
+
+        await axios.post('http://localhost:3001/reservasi', {
+          ...data,
+          waktu: new Date().toISOString()
+        })
+
+        alert('✅ Reservasi berhasil disimpan!')
+        this.$router.push('/jadwal')
+      } catch (err) {
+        console.error('❌ Gagal menyimpan reservasi:', err)
+        alert('❌ Terjadi kesalahan saat menyimpan reservasi.')
+      }
     }
   }
 }
 </script>
 
 <style scoped>
-.reservasi {
-  max-width: 500px;
-  margin: 40px auto;
-  background: linear-gradient(135deg, #3b82f6, #2563eb);
+.form-wrapper {
+  max-width: 400px;
+  margin: 60px auto;
+  background: linear-gradient(135deg, #6366f1, #4338ca);
   padding: 30px 25px;
-  border-radius: 25px;
-  color: #dbeafe;
-  box-shadow: 0 12px 30px rgba(59, 130, 246, 0.6);
+  border-radius: 20px;
+  color: #e0e7ff;
+  box-shadow: 0 12px 30px rgba(99, 102, 241, 0.7);
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-h2 {
+.form-title {
   text-align: center;
-  margin-bottom: 25px;
+  font-size: 2rem;
   font-weight: 700;
-  font-size: 2.2rem;
-  text-shadow: 0 0 10px #93c5fd;
+  margin-bottom: 24px;
+  text-shadow: 0 0 12px #8b5cf6;
 }
 
-.form-reservasi label {
-  display: block;
-  margin-bottom: 15px;
+.form-box {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+label {
   font-weight: 600;
+  margin-bottom: 6px;
 }
 
-.form-reservasi input,
-.form-reservasi select {
-  width: 100%;
+input,
+select {
   padding: 10px 12px;
-  border-radius: 12px;
+  border-radius: 10px;
   border: none;
-  font-size: 1rem;
   outline: none;
+  font-size: 1rem;
   transition: box-shadow 0.3s ease;
 }
 
-.form-reservasi input:focus,
-.form-reservasi select:focus {
-  box-shadow: 0 0 8px #60a5fa;
+input:focus,
+select:focus {
+  box-shadow: 0 0 10px #8b5cf6;
 }
 
-button {
-  width: 100%;
-  background-color: #2563eb;
-  border: none;
-  padding: 12px 0;
-  border-radius: 15px;
-  font-weight: 700;
+.submit-button {
+  background-color: #7c3aed;
   color: white;
-  font-size: 1.2rem;
+  font-weight: 700;
+  padding: 12px;
+  border: none;
+  border-radius: 12px;
+  font-size: 1.1rem;
   cursor: pointer;
-  margin-top: 20px;
   transition: background-color 0.3s ease;
 }
 
-button:hover {
-  background-color: #1e40af;
+.submit-button:hover {
+  background-color: #5b21b6;
 }
 </style>

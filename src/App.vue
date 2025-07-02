@@ -6,13 +6,11 @@
         <router-link to="/" class="site-title">Futsal Booking</router-link>
       </div>
       <ul class="nav-links">
-        <li><router-link to="/login">Login</router-link></li>
-        <li><router-link to="/register">Register</router-link></li>
         <li><router-link to="/">Home</router-link></li>
         <li><router-link to="/jadwal">Jadwal</router-link></li>
         <li><router-link to="/reservasi">Reservasi</router-link></li>
-        <li><router-link to="/pembayaran">Pembayaran</router-link></li>
         <li><router-link to="/prestasi">Prestasi</router-link></li>
+        <li><router-link to="/login">Login</router-link></li>
       </ul>
     </nav>
 
@@ -77,6 +75,7 @@
   transition: background-color 0.3s ease;
 }
 
+.nav-links li a.router-link-exact-active,
 .nav-links li a:hover {
   background-color: #3b82f6;
   color: white;
