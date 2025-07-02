@@ -39,14 +39,8 @@
               <span v-else class="text-gray-400">-</span>
             </td>
             <td>
-              <span
-                v-if="item.status === 'Lunas' || item.status === 'Sudah Dibayar'"
-                class="text-green-600 font-semibold"
-              >Lunas</span>
-              <span
-                v-else
-                class="text-yellow-500 font-semibold"
-              >Belum</span>
+              <span v-if="item.status === 'Lunas' || item.status === 'Sudah Dibayar'" class="text-green-600 font-semibold">Lunas</span>
+              <span v-else class="text-yellow-500 font-semibold">Belum</span>
             </td>
             <td>
               <button class="text-red-600 underline" @click="hapusJadwal(item.id)">Hapus</button>
@@ -64,6 +58,8 @@
 <script>
 import axios from 'axios'
 
+const BASE_URL = 'https://my-json-server.typicode.com/Luthfiadr15/futsal-booking'
+
 export default {
   name: "Jadwal",
   data() {
@@ -74,23 +70,15 @@ export default {
   methods: {
     async getJadwal() {
       try {
-        const res = await axios.get('http://localhost:3001/jadwal')
+        const res = await axios.get(`${BASE_URL}/jadwal`)
         this.jadwal = res.data
       } catch (err) {
         console.error('❌ Gagal mengambil data jadwal:', err)
         alert('❌ Gagal mengambil data.')
       }
     },
-    async hapusJadwal(id) {
-      if (!confirm('Yakin ingin menghapus jadwal ini?')) return
-      try {
-        await axios.delete(`http://localhost:3001/jadwal/${id}`)
-        this.getJadwal()
-        alert('✅ Jadwal berhasil dihapus!')
-      } catch (err) {
-        console.error('❌ Gagal menghapus jadwal:', err)
-        alert('❌ Gagal menghapus jadwal.')
-      }
+    hapusJadwal(id) {
+      alert('🚫 Tidak bisa menghapus data dari GitHub JSON Server (read-only).')
     },
     goToReservasi() {
       this.$router.push('/reservasi')
