@@ -11,34 +11,36 @@
       </div>
     </div>
 
+    <!-- Fitur Utama -->
     <div class="features">
-      <div class="feature">
+      <div class="feature feature-jadwal">
         <img src="@/assets/icon-schedule.png" alt="Jadwal" />
         <h3>Jadwal Real-Time</h3>
         <p>Lihat ketersediaan lapangan secara langsung tanpa menunggu.</p>
       </div>
-      <div class="feature">
+      <div class="feature feature-pembayaran">
         <img src="@/assets/icon-payment.png" alt="Pembayaran" />
         <h3>Pembayaran Mudah</h3>
         <p>Dukung berbagai metode pembayaran cepat dan aman.</p>
       </div>
-      <div class="feature">
+      <div class="feature feature-support">
         <img src="@/assets/icon-support.png" alt="Support" />
         <h3>Dukungan 24/7</h3>
         <p>Butuh bantuan? Tim kami siap membantu kapan saja.</p>
       </div>
     </div>
 
+    <!-- Statistik -->
     <div class="stats">
-      <div class="stat-box">
+      <div>
         <h2>500+</h2>
         <p>Reservasi Sukses</p>
       </div>
-      <div class="stat-box">
+      <div>
         <h2>100%</h2>
         <p>Pelanggan Puas</p>
       </div>
-      <div class="stat-box">
+      <div>
         <h2>3+</h2>
         <p>Lapangan Tersedia</p>
       </div>
@@ -120,6 +122,7 @@ export default {
   50% { transform: translateY(-15px); }
 }
 
+/* FEATURES */
 .features {
   display: flex;
   justify-content: space-around;
@@ -129,20 +132,15 @@ export default {
 }
 
 .feature {
-  background: linear-gradient(to bottom right, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
   padding: 20px;
   border-radius: 20px;
   width: 250px;
   margin: 15px;
-  box-shadow: 0 0 16px rgba(255, 255, 255, 0.15);
-  backdrop-filter: blur(4px);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 0 0 12px rgba(255, 255, 255, 0.1);
+  transition: transform 0.3s ease;
 }
-
 .feature:hover {
   transform: scale(1.05);
-  box-shadow: 0 0 24px rgba(255, 255, 255, 0.3);
 }
 
 .feature img {
@@ -155,6 +153,18 @@ export default {
   margin-bottom: 8px;
 }
 
+/* Perjelas background fitur */
+.feature-jadwal {
+  background: rgba(59, 130, 246, 0.2); /* Biru */
+}
+.feature-pembayaran {
+  background: rgba(16, 185, 129, 0.2); /* Hijau */
+}
+.feature-support {
+  background: rgba(251, 191, 36, 0.2); /* Kuning */
+}
+
+/* STATISTIK */
 .stats {
   display: flex;
   justify-content: center;
@@ -163,21 +173,13 @@ export default {
   margin-top: 30px;
 }
 
-.stat-box {
-  background: linear-gradient(to bottom right, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.06));
+.stats div {
+  background: rgba(255, 255, 255, 0.07);
   padding: 25px 30px;
   border-radius: 15px;
   text-align: center;
   min-width: 180px;
-  box-shadow: 0 0 16px rgba(255, 255, 255, 0.15);
-  backdrop-filter: blur(4px);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.stat-box:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 0 24px rgba(255, 255, 255, 0.3);
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.1);
 }
 
 .stats h2 {
