@@ -13,14 +13,18 @@
 </template>
 
 <script>
+import prestasi1 from '@/assets/prestasi1.jpg'
+import prestasi2 from '@/assets/prestasi2.jpg'
+import prestasi3 from '@/assets/prestasi3.jpg'
+
 export default {
   name: "Prestasi",
   data() {
     return {
       fotoPrestasi: [
-        require('@/assets/prestasi1.jpg'),
-        require('@/assets/prestasi2.jpg'),
-        require('@/assets/prestasi3.jpg')
+        prestasi1,
+        prestasi2,
+        prestasi3
       ]
     }
   }
@@ -29,7 +33,7 @@ export default {
 
 <style scoped>
 .box-prestasi {
-  background: linear-gradient(135deg, #6366f1, #4338ca); /* Sama seperti Jadwal */
+  background: linear-gradient(135deg, #6366f1, #4338ca);
   padding: 40px;
   border-radius: 24px;
   color: #e0e7ff;

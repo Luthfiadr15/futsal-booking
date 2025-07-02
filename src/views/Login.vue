@@ -1,51 +1,26 @@
 <template>
   <div class="min-h-screen flex items-center justify-center bg-gray-100">
-    <div class="form-wrapper">
-      <h2 class="form-title">Formulir Reservasi & Pembayaran</h2>
+    <div class="auth-box">
+      <h2>{{ isLogin ? 'Login' : 'Register' }}</h2>
 
-      <form @submit.prevent="kirimReservasi" class="form-box">
+      <form @submit.prevent="handleSubmit" class="form-box">
         <div class="form-group">
-          <label>Nama Pemesan</label>
-          <input v-model="form.nama" type="text" required placeholder="Masukkan nama" />
+          <label>Username</label>
+          <input v-model="form.username" required />
         </div>
 
         <div class="form-group">
-          <label>Tanggal</label>
-          <input v-model="form.tanggal" type="date" required />
+          <label>Password</label>
+          <input type="password" v-model="form.password" required />
         </div>
 
-        <div class="form-group">
-          <label>Jam</label>
-          <input v-model="form.jam" type="time" required />
-        </div>
+        <button type="submit">
+          {{ isLogin ? 'Login' : 'Register' }}
+        </button>
 
-        <div class="form-group">
-          <label>Lapangan</label>
-          <select v-model="form.lapangan" required>
-            <option disabled value="">Pilih Lapangan</option>
-            <option>Lapangan 1</option>
-            <option>Lapangan 2</option>
-            <option>Lapangan 3</option>
-          </select>
-        </div>
-
-        <div class="form-group">
-          <label>Metode Pembayaran</label>
-          <select v-model="form.metode" required>
-            <option disabled value="">Pilih Metode</option>
-            <option>QRIS</option>
-            <option>Transfer BCA</option>
-            <option>Transfer BNI</option>
-            <option>Tunai</option>
-          </select>
-        </div>
-
-        <div class="form-group">
-          <label>Jumlah Bayar (Rp)</label>
-          <input v-model.number="form.jumlah" type="number" required placeholder="Contoh: 150000" />
-        </div>
-
-        <button type="submit" class="submit-button">Simpan Reservasi</button>
+        <p class="switch" @click="toggleMode">
+          {{ isLogin ? 'Belum punya akun? Register di sini' : 'Sudah punya akun? Login di sini' }}
+        </p>
       </form>
     </div>
   </div>
@@ -53,55 +28,63 @@
 
 <script>
 import axios from 'axios'
+import { useAuthStore } from '@/stores/auth'
 
 const BASE_URL = 'https://my-json-server.typicode.com/Luthfiadr15/futsal-booking'
 
 export default {
-  name: 'Reservasi',
+  name: 'Login',
   data() {
     return {
+      isLogin: true,
       form: {
-        nama: '',
-        tanggal: '',
-        jam: '',
-        lapangan: '',
-        status: 'Lunas',
-        metode: '',
-        jumlah: null
+        username: '',
+        password: ''
       }
     }
   },
   methods: {
-    async kirimReservasi() {
+    toggleMode() {
+      this.isLogin = !this.isLogin
+      this.form.username = ''
+      this.form.password = ''
+    },
+    async handleSubmit() {
       try {
-        const { nama, tanggal, jam, lapangan, status, metode, jumlah } = this.form
+        const res = await axios.get(`${BASE_URL}/users?username=${this.form.username}`)
 
-        const res = await axios.get(`${BASE_URL}/jadwal?tanggal=${tanggal}&jam=${jam}`)
+        if (this.isLogin) {
+          if (res.data.length === 0 || res.data[0].password !== this.form.password) {
+            alert('❌ Username atau password salah')
+            return
+          }
 
-        const data = {
-          nama, tanggal, jam, lapangan, status, metode, jumlah
-        }
+          const auth = useAuthStore()
+          auth.login(this.form.username)
 
-        if (res.data.length > 0) {
-          const existing = res.data[0]
-          await axios.patch(`${BASE_URL}/jadwal/${existing.id}`, {
-            ...existing,
-            ...data
+          await axios.post(`${BASE_URL}/logins`, {
+            username: this.form.username,
+            timestamp: new Date().toISOString()
           })
+
+          this.$router.push('/')
         } else {
-          await axios.post(`${BASE_URL}/jadwal`, data)
+          if (res.data.length > 0) {
+            alert('❌ Username sudah terdaftar')
+            return
+          }
+
+          await axios.post(`${BASE_URL}/users`, {
+            username: this.form.username,
+            password: this.form.password
+          })
+
+          alert('✅ Registrasi berhasil, silakan login')
+          this.toggleMode()
         }
-
-        await axios.post(`${BASE_URL}/reservasi`, {
-          ...data,
-          waktu: new Date().toISOString()
-        })
-
-        alert('✅ Reservasi berhasil disimpan!')
-        this.$router.push('/jadwal')
       } catch (err) {
-        console.error('❌ Gagal menyimpan reservasi:', err)
-        alert('❌ Terjadi kesalahan saat menyimpan reservasi.')
+        console.error(err)
+        alert('❌ Terjadi kesalahan saat memproses data')
       }
     }
   }
@@ -109,7 +92,7 @@ export default {
 </script>
 
 <style scoped>
-.form-wrapper {
+.auth-box {
   max-width: 400px;
   margin: 60px auto;
   background: linear-gradient(135deg, #6366f1, #4338ca);
@@ -120,7 +103,7 @@ export default {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-.form-title {
+.auth-box h2 {
   text-align: center;
   font-size: 2rem;
   font-weight: 700;
@@ -144,8 +127,7 @@ label {
   margin-bottom: 6px;
 }
 
-input,
-select {
+input {
   padding: 10px 12px;
   border-radius: 10px;
   border: none;
@@ -154,12 +136,11 @@ select {
   transition: box-shadow 0.3s ease;
 }
 
-input:focus,
-select:focus {
+input:focus {
   box-shadow: 0 0 10px #8b5cf6;
 }
 
-.submit-button {
+button {
   background-color: #7c3aed;
   color: white;
   font-weight: 700;
@@ -171,7 +152,16 @@ select:focus {
   transition: background-color 0.3s ease;
 }
 
-.submit-button:hover {
+button:hover {
   background-color: #5b21b6;
+}
+
+.switch {
+  margin-top: 10px;
+  text-align: center;
+  color: #dbeafe;
+  cursor: pointer;
+  font-size: 0.95rem;
+  text-shadow: 0 0 5px rgba(255, 255, 255, 0.2);
 }
 </style>
