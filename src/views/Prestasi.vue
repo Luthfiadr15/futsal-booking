@@ -16,6 +16,11 @@
 import prestasi1 from '@/assets/prestasi1.jpg'
 import prestasi2 from '@/assets/prestasi2.jpg'
 import prestasi3 from '@/assets/prestasi3.jpg'
+import prestasi4 from '@/assets/prestasi4.jpg'
+import prestasi5 from '@/assets/prestasi5.jpg'
+import prestasi6 from '@/assets/prestasi6.jpg'
+import prestasi7 from '@/assets/prestasi7.jpg'
+import prestasi8 from '@/assets/prestasi8.jpg'
 
 export default {
   name: "Prestasi",
@@ -24,7 +29,12 @@ export default {
       fotoPrestasi: [
         prestasi1,
         prestasi2,
-        prestasi3
+        prestasi3,
+        prestasi4,
+        prestasi5,
+        prestasi6,
+        prestasi7,
+        prestasi8
       ]
     }
   }
@@ -58,14 +68,15 @@ export default {
 }
 
 .gallery {
-  display: flex;
-  justify-content: center;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
   gap: 24px;
-  flex-wrap: wrap;
+  justify-items: center;
 }
 
 .gallery img {
-  width: 260px;
+  width: 100%;
+  max-width: 260px;
   height: 180px;
   object-fit: cover;
   border-radius: 18px;

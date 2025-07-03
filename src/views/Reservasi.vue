@@ -54,8 +54,6 @@
 <script>
 import axios from 'axios'
 
-const BASE_URL = 'https://my-json-server.typicode.com/Luthfiadr15/futsal-booking'
-
 export default {
   name: 'Reservasi',
   data() {
@@ -68,34 +66,36 @@ export default {
         status: 'Lunas',
         metode: '',
         jumlah: null
-      }
+      },
+      baseURL: 'http://localhost:3001' // ✅ pakai lokal
     }
   },
   methods: {
     async kirimReservasi() {
       try {
         const { nama, tanggal, jam, lapangan, status, metode, jumlah } = this.form
+        const data = { nama, tanggal, jam, lapangan, status, metode, jumlah }
 
-        const res = await axios.get(`${BASE_URL}/jadwal?tanggal=${tanggal}&jam=${jam}`)
-
-        const data = {
-          nama, tanggal, jam, lapangan, status, metode, jumlah
-        }
+        // Cek apakah sudah ada jadwal di tanggal + jam tersebut
+        const res = await axios.get(`${this.baseURL}/jadwal?tanggal=${tanggal}&jam=${jam}`)
 
         if (res.data.length > 0) {
-          alert('❌ Waktu dan tanggal ini sudah dibooking!')
-          return
+          const existing = res.data[0]
+          await axios.patch(`${this.baseURL}/jadwal/${existing.id}`, {
+            ...existing,
+            ...data
+          })
         } else {
-          alert('✅ Simulasi berhasil: data berhasil dikirim (hanya GET/POST palsu)')
+          await axios.post(`${this.baseURL}/jadwal`, data)
         }
 
-        // Simulasi POST data (tidak benar-benar menyimpan)
-        // await axios.post(`${BASE_URL}/jadwal`, data)
-        // await axios.post(`${BASE_URL}/reservasi`, {
-        //   ...data,
-        //   waktu: new Date().toISOString()
-        // })
+        // Simpan juga ke tabel reservasi
+        await axios.post(`${this.baseURL}/reservasi`, {
+          ...data,
+          waktu: new Date().toISOString()
+        })
 
+        alert('✅ Reservasi berhasil disimpan!')
         this.$router.push('/jadwal')
       } catch (err) {
         console.error('❌ Gagal menyimpan reservasi:', err)

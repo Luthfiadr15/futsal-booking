@@ -12,7 +12,7 @@
       <tbody>
         <tr v-for="login in logins" :key="login.id" class="text-center">
           <td class="border px-4 py-2">{{ login.username }}</td>
-          <td class="border px-4 py-2">{{ formatTanggal(login.waktu) }}</td>
+          <td class="border px-4 py-2">{{ formatTanggal(login.timestamp) }}</td>
         </tr>
         <tr v-if="logins.length === 0">
           <td colspan="2" class="py-4 text-gray-500">Belum ada data login.</td>
@@ -35,10 +35,10 @@ export default {
   methods: {
     async fetchLogins() {
       try {
-        const res = await axios.get('https://my-json-server.typicode.com/Luthfiadr15/futsal-booking/logins')
+        const res = await axios.get('http://localhost:3001/logins')
         this.logins = res.data
       } catch (err) {
-        console.error('❌ Gagal mengambil data login:', err)
+        console.error('Gagal mengambil data login:', err)
       }
     },
     formatTanggal(iso) {
